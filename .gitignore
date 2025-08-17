@@ -253,5 +253,6 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
-
+*.hcl
+**/*.zip
 # End of https://www.toptal.com/developers/gitignore/api/windows,visualstudiocode,terraform,python

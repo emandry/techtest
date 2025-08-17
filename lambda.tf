@@ -1,4 +1,4 @@
-# IAM Role para Lambda
+# IAM for Lambda
 resource "aws_iam_role" "lambda_exec" {
   name = "lambda_exec_role"
 
@@ -14,17 +14,17 @@ resource "aws_iam_role" "lambda_exec" {
   })
 }
 
-# Adjuntar permisos básicos
+# Add Permission
 resource "aws_iam_role_policy_attachment" "lambda_policy" {
   role       = aws_iam_role.lambda_exec.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
 }
 
-# Empaquetar Lambda (ZIP)
+# Zip python script for upload
 data "archive_file" "lambda_zip" {
   type        = "zip"
-  source_file = "${path.module}/lambda_function.py"
-  output_path = "${path.module}/lambda_function.zip"
+  source_file = "${path.module}/function_code/lambda_function.py"
+  output_path = "${path.module}/function_code/lambda_function.zip"
 }
 
 # Lambda
@@ -49,7 +49,7 @@ resource "aws_apigatewayv2_api" "http_api" {
   protocol_type = "HTTP"
 }
 
-# Integración Lambda <-> API Gateway
+# Lambda <-> API Gateway
 resource "aws_apigatewayv2_integration" "lambda_integration" {
   api_id           = aws_apigatewayv2_api.http_api.id
   integration_type = "AWS_PROXY"
@@ -70,7 +70,7 @@ resource "aws_apigatewayv2_stage" "default" {
   auto_deploy = true
 }
 
-# Permitir a API Gateway invocar Lambda
+# Invoke Lambda from API Gateway
 resource "aws_lambda_permission" "apigw" {
   statement_id  = "AllowAPIGatewayInvoke"
   action        = "lambda:InvokeFunction"
